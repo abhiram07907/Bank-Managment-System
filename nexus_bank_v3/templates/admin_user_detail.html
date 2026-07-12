@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>User Detail — NexusBank Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--void:#050810;--base:#080e1c;--card:#0f1c32;--lift:#142240;--rim:rgba(255,255,255,.07);--rim2:rgba(255,255,255,.11);--amber:#f5a623;--emerald:#00e5a0;--rose:#ff5c7a;--sky:#4db8ff;--ink:#dde5f4;--fog:#7b8fad}
+body{font-family:'Jost',sans-serif;background:var(--void);color:var(--ink);min-height:100vh}
+h1,h2,h3{font-family:'Cormorant Garamond',serif}
+a{color:var(--amber);text-decoration:none}
+.anav{background:rgba(8,14,28,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--rim);padding:.9rem 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.anav-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--amber);display:flex;align-items:center;gap:.5rem}
+.tag-admin{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.25);padding:.2rem .8rem;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.07em}
+.wrap{max-width:1200px;margin:0 auto;padding:2rem 1.75rem 5rem}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;color:var(--fog);font-size:.875rem;margin-bottom:1.75rem;padding:.45rem .9rem;border-radius:8px;border:1px solid var(--rim);background:var(--card);transition:all .2s}
+.back-btn:hover{color:var(--ink);background:var(--lift)}
+/* Profile Hero */
+.user-hero{background:linear-gradient(125deg,#06122a 0%,#0a1d3d 50%,#061829 100%);border:1px solid rgba(245,166,35,.2);border-radius:20px;padding:2.5rem 3rem;position:relative;overflow:hidden;margin-bottom:2rem}
+.user-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(245,166,35,.1) 0%,transparent 65%);pointer-events:none}
+.uh-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem}
+.uh-avatar{width:72px;height:72px;border-radius:18px;background:rgba(245,166,35,.12);border:2px solid rgba(245,166,35,.3);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
+.uh-info{flex:1}
+.uh-name{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:.3rem}
+.uh-acc{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:rgba(255,255,255,.4);letter-spacing:.1em}
+.uh-balance{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;color:var(--amber);line-height:1}
+.uh-bal-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:.3rem}
+.uh-chips{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.2rem}
+.uh-chip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.35rem .9rem;font-size:.78rem;color:rgba(255,255,255,.5)}
+.uh-chip strong{color:rgba(255,255,255,.85)}
+/* Cards */
+.card{background:var(--card);border:1px solid var(--rim);border-radius:14px;padding:1.5rem 1.75rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(140deg,rgba(255,255,255,.02) 0%,transparent 50%);pointer-events:none}
+.card-hd{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem}
+/* Grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+@media(max-width:800px){.g2,.g3{grid-template-columns:1fr}.uh-top{flex-direction:column}}
+/* Info row */
+.ir{display:flex;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--rim)}
+.ir:last-child{border-bottom:none}
+.ir-k{width:42%;font-size:.8rem;color:var(--fog);font-weight:500}
+.ir-v{font-size:.88rem;font-weight:500}
+/* Table */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{border-bottom:1px solid var(--rim2)}
+th{padding:.75rem 1rem;text-align:left;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fog);white-space:nowrap}
+td{padding:.8rem 1rem;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(255,255,255,.02)}
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:.22rem .7rem;border-radius:20px;font-size:.72rem;font-weight:700}
+.b-green{background:rgba(0,229,160,.12);color:var(--emerald);border:1px solid rgba(0,229,160,.2)}
+.b-red  {background:rgba(255,92,122,.12);color:var(--rose);border:1px solid rgba(255,92,122,.2)}
+.b-amber{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+.b-sky  {background:rgba(77,184,255,.12);color:var(--sky);border:1px solid rgba(77,184,255,.2)}
+.b-gray {background:var(--rim);color:var(--fog);border:1px solid var(--rim2)}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.1rem;border-radius:9px;border:none;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;font-size:.85rem;text-decoration:none;transition:all .2s}
+.btn-approve{background:rgba(0,229,160,.12);color:var(--emerald);border:1px solid rgba(0,229,160,.2)}
+.btn-approve:hover{background:rgba(0,229,160,.22)}
+.btn-danger{background:rgba(255,92,122,.12);color:var(--rose);border:1px solid rgba(255,92,122,.2)}
+.btn-danger:hover{background:rgba(255,92,122,.22)}
+.btn-amber{background:var(--amber);color:#050810}
+.btn-amber:hover{opacity:.88}
+.btn-ghost{background:var(--lift);border:1px solid var(--rim);color:var(--fog)}
+.btn-ghost:hover{color:var(--ink)}
+/* Stat mini */
+.mini-stat{background:var(--lift);border:1px solid var(--rim);border-radius:12px;padding:1.1rem 1.25rem}
+.ms-val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;line-height:1}
+.ms-lbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);margin-top:.3rem}
+/* Flash */
+.flashes{list-style:none;margin-bottom:1.5rem}
+.flash{padding:.8rem 1.1rem;border-radius:9px;font-size:.88rem;margin-bottom:.5rem;border-left:3px solid}
+.flash.success{background:rgba(0,229,160,.08);border-color:var(--emerald);color:var(--emerald)}
+.flash.error  {background:rgba(255,92,122,.08);border-color:var(--rose);color:var(--rose)}
+.mono{font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+.muted{color:var(--fog)}
+.mb{margin-bottom:1rem}.mb2{margin-bottom:1.5rem}
+.tabs{display:flex;gap:.25rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{padding:.5rem 1.25rem;border-radius:9px;font-size:.875rem;font-weight:600;cursor:pointer;background:var(--card);border:1px solid var(--rim);color:var(--fog);transition:all .2s}
+.tab.active,.tab:hover{background:rgba(245,166,35,.12);color:var(--amber);border-color:rgba(245,166,35,.25)}
+.panel{display:none}.panel.active{display:block}
+</style>
+</head>
+<body>
+
+<nav class="anav">
+  <div class="anav-logo">👑 NexusBank Admin</div>
+  <span class="tag-admin">USER DETAIL</span>
+  <a href="{{ url_for('admin_dashboard') }}" style="margin-left:auto;font-size:.85rem;color:var(--fog);padding:.35rem .85rem;border-radius:7px;border:1px solid var(--rim)">← Back to Dashboard</a>
+  <a href="{{ url_for('admin_logout') }}" style="font-size:.85rem;color:var(--rose);padding:.35rem .85rem;border-radius:7px;border:1px solid rgba(255,92,122,.2)">Logout</a>
+</nav>
+
+<div class="wrap">
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}<ul class="flashes">{% for c,m in msgs %}<li class="flash {{c}}">{{ m }}</li>{% endfor %}</ul>{% endif %}
+  {% endwith %}
+
+  <!-- User Hero -->
+  <div class="user-hero">
+    <div class="uh-top">
+      <div style="display:flex;gap:1.25rem;align-items:center">
+        <div class="uh-avatar">{{ u.name[0].upper() }}</div>
+        <div class="uh-info">
+          <div class="uh-name">{{ u.name }}</div>
+          <div class="uh-acc">{{ u.account_no }}</div>
+          <div style="margin-top:.6rem;display:flex;gap:.5rem;flex-wrap:wrap">
+            {% if u.status=='Active' %}<span class="badge b-green">● Active</span>{% else %}<span class="badge b-red">● Frozen</span>{% endif %}
+            {% if u.kyc_verified %}<span class="badge b-green">✓ KYC Verified</span>{% else %}<span class="badge b-amber">⏳ KYC Pending</span>{% endif %}
+            <span class="badge b-sky">{{ u.account_type }}</span>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="uh-bal-lbl">Account Balance</div>
+        <div class="uh-balance">₹{{ "{:,.2f}".format(u.balance) }}</div>
+      </div>
+    </div>
+    <div class="uh-chips">
+      <div class="uh-chip">Email: <strong>{{ u.email }}</strong></div>
+      <div class="uh-chip">Phone: <strong>{{ u.phone }}</strong></div>
+      <div class="uh-chip">DOB: <strong>{{ u.dob or '—' }}</strong></div>
+      <div class="uh-chip">Member Since: <strong>{{ u.created_at[:10] }}</strong></div>
+      <div class="uh-chip">Loans: <strong>{{ loans|length }}</strong></div>
+      <div class="uh-chip">FDs: <strong>{{ fds|length }}</strong></div>
+      <div class="uh-chip">Beneficiaries: <strong>{{ bens|length }}</strong></div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="g3 mb2">
+    <div class="mini-stat">
+      <div class="ms-val">{{ txns|length }}</div>
+      <div class="ms-lbl">Total Transactions</div>
+    </div>
+    <div class="mini-stat">
+      <div class="ms-val" style="color:var(--amber)">₹{{ "{:,.0f}".format(loans|sum(attribute='outstanding') if loans else 0) }}</div>
+      <div class="ms-lbl">Loan Outstanding</div>
+    </div>
+    <div class="mini-stat">
+      <div class="ms-val" style="color:var(--emerald)">₹{{ "{:,.0f}".format(fds|selectattr('status','eq','Active')|sum(attribute='amount') if fds else 0) }}</div>
+      <div class="ms-lbl">Active FD Amount</div>
+    </div>
+  </div>
+
+  <!-- Admin Actions -->
+  <div class="card mb2">
+    <div class="card-hd">⚡ Admin Actions</div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+      <!-- Freeze / Unfreeze -->
+      <form method="POST" action="{{ url_for('admin_freeze', acc_no=u.account_no) }}" style="display:inline">
+        <button type="submit" class="btn {% if u.status=='Active' %}btn-danger{% else %}btn-approve{% endif %}">
+          {% if u.status=='Active' %}🔒 Freeze Account{% else %}🔓 Unfreeze Account{% endif %}
+        </button>
+      </form>
+      <!-- Toggle KYC -->
+      <form method="POST" action="{{ url_for('admin_toggle_kyc', acc_no=u.account_no) }}" style="display:inline">
+        <button type="submit" class="btn {% if u.kyc_verified %}btn-danger{% else %}btn-approve{% endif %}">
+          {% if u.kyc_verified %}✕ Revoke KYC{% else %}✓ Verify KYC{% endif %}
+        </button>
+      </form>
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost">← All Customers</a>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('info')">📋 Account Info</div>
+    <div class="tab" onclick="showTab('txns')">💳 Transactions ({{ txns|length }})</div>
+    <div class="tab" onclick="showTab('loans')">🏛️ Loans ({{ loans|length }})</div>
+    <div class="tab" onclick="showTab('fds')">📈 Fixed Deposits ({{ fds|length }})</div>
+    <div class="tab" onclick="showTab('bens')">👥 Beneficiaries ({{ bens|length }})</div>
+  </div>
+
+  <!-- Account Info Panel -->
+  <div class="panel active" id="tab-info">
+    <div class="g2" style="align-items:start">
+      <div class="card">
+        <div class="card-hd">Personal Information</div>
+        <div class="ir"><div class="ir-k">Full Name</div><div class="ir-v">{{ u.name }}</div></div>
+        <div class="ir"><div class="ir-k">Email</div><div class="ir-v">{{ u.email }}</div></div>
+        <div class="ir"><div class="ir-k">Phone</div><div class="ir-v">{{ u.phone }}</div></div>
+        <div class="ir"><div class="ir-k">Date of Birth</div><div class="ir-v">{{ u.dob or '—' }}</div></div>
+        <div class="ir"><div class="ir-k">Address</div><div class="ir-v" style="font-size:.85rem;line-height:1.5">{{ u.address or '—' }}</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hd">Account Information</div>
+        <div class="ir"><div class="ir-k">Account Number</div><div class="ir-v mono" style="color:var(--amber);font-size:.82rem">{{ u.account_no }}</div></div>
+        <div class="ir"><div class="ir-k">Account Type</div><div class="ir-v"><span class="badge b-sky">{{ u.account_type }}</span></div></div>
+        <div class="ir"><div class="ir-k">Balance</div><div class="ir-v" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--amber)">₹{{ "{:,.2f}".format(u.balance) }}</div></div>
+        <div class="ir"><div class="ir-k">Status</div><div class="ir-v">{% if u.status=='Active' %}<span class="badge b-green">Active</span>{% else %}<span class="badge b-red">Frozen</span>{% endif %}</div></div>
+        <div class="ir"><div class="ir-k">KYC Verified</div><div class="ir-v">{% if u.kyc_verified %}<span class="badge b-green">✓ Yes</span>{% else %}<span class="badge b-amber">⏳ Pending</span>{% endif %}</div></div>
+        <div class="ir"><div class="ir-k">Member Since</div><div class="ir-v">{{ u.created_at }}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions Panel -->
+  <div class="panel" id="tab-txns">
+    <div class="card">
+      <div class="card-hd">All Transactions</div>
+      {% if txns %}
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Type</th><th>Category</th><th>Amount</th><th>Balance After</th><th>Description</th><th>Time</th></tr></thead>
+          <tbody>
+            {% for t in txns %}
+            <tr>
+              <td class="muted mono" style="font-size:.75rem">{{ t.id }}</td>
+              <td>
+                {% if 'Deposit' in t.type or 'Received' in t.type or 'Opened' in t.type or 'Disbursed' in t.type %}
+                  <span class="badge b-green">↓ {{ t.type }}</span>
+                {% elif 'Withdrawal' in t.type or 'Sent' in t.type or 'EMI' in t.type %}
+                  <span class="badge b-red">↑ {{ t.type }}</span>
+                {% else %}
+                  <span class="badge b-sky">{{ t.type }}</span>
+                {% endif %}
+              </td>
+              <td><span class="badge b-gray" style="font-size:.7rem">{{ t.category or '—' }}</span></td>
+              <td style="font-weight:600;font-family:'Cormorant Garamond',serif;font-size:1rem">₹{{ "{:,.2f}".format(t.amount) }}</td>
+              <td class="muted">₹{{ "{:,.2f}".format(t.balance_after) }}</td>
+              <td class="muted" style="font-size:.82rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.description or '—' }}</td>
+              <td class="muted mono" style="font-size:.75rem;white-space:nowrap">{{ t.timestamp }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="muted" style="padding:2rem;text-align:center">No transactions.</p>{% endif %}
+    </div>
+  </div>
+
+  <!-- Loans Panel -->
+  <div class="panel" id="tab-loans">
+    <div class="card">
+      <div class="card-hd">Loan Applications</div>
+      {% if loans %}
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Type</th><th>Principal</th><th>Rate</th><th>EMI</th><th>Tenure</th><th>Paid</th><th>Outstanding</th><th>Status</th><th>Applied</th></tr></thead>
+          <tbody>
+            {% for l in loans %}
+            <tr>
+              <td class="muted" style="font-size:.75rem">{{ l.id }}</td>
+              <td><span class="badge b-sky">{{ l.loan_type }}</span></td>
+              <td style="font-weight:600">₹{{ "{:,.0f}".format(l.principal) }}</td>
+              <td class="muted">{{ l.interest_rate }}%</td>
+              <td style="font-weight:600;color:var(--amber)">₹{{ "{:,.0f}".format(l.emi) }}/mo</td>
+              <td class="muted">{{ l.tenure_months }} mo</td>
+              <td>{{ l.paid_emis }}/{{ l.tenure_months }}</td>
+              <td style="font-weight:600">₹{{ "{:,.0f}".format(l.outstanding) }}</td>
+              <td>
+                {% if l.status=='Approved' %}<span class="badge b-green">Approved</span>
+                {% elif l.status=='Pending' %}<span class="badge b-amber">Pending</span>
+                {% elif l.status=='Rejected' %}<span class="badge b-red">Rejected</span>
+                {% else %}<span class="badge b-gray">{{ l.status }}</span>{% endif %}
+              </td>
+              <td class="muted mono" style="font-size:.75rem">{{ l.applied_at[:10] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="muted" style="padding:2rem;text-align:center">No loan applications.</p>{% endif %}
+    </div>
+  </div>
+
+  <!-- FDs Panel -->
+  <div class="panel" id="tab-fds">
+    <div class="card">
+      <div class="card-hd">Fixed Deposits</div>
+      {% if fds %}
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Amount</th><th>Rate</th><th>Tenure</th><th>Opens</th><th>Matures</th><th>Maturity Amt</th><th>Interest</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for fd in fds %}
+            <tr>
+              <td class="muted" style="font-size:.75rem">{{ fd.id }}</td>
+              <td style="font-weight:600">₹{{ "{:,.0f}".format(fd.amount) }}</td>
+              <td><span class="badge b-green">{{ fd.interest_rate }}%</span></td>
+              <td class="muted">{{ fd.tenure_months }} mo</td>
+              <td class="muted mono" style="font-size:.78rem">{{ fd.created_at[:10] }}</td>
+              <td style="font-weight:600;color:var(--emerald)" class="mono" style="font-size:.78rem">{{ fd.maturity_date }}</td>
+              <td style="font-weight:600">₹{{ "{:,.2f}".format(fd.maturity_amt) }}</td>
+              <td style="color:var(--amber)">₹{{ "{:,.2f}".format(fd.maturity_amt - fd.amount) }}</td>
+              <td>{% if fd.status=='Active' %}<span class="badge b-green">Active</span>{% elif fd.status=='Broken' %}<span class="badge b-red">Broken</span>{% else %}<span class="badge b-gray">{{ fd.status }}</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="muted" style="padding:2rem;text-align:center">No fixed deposits.</p>{% endif %}
+    </div>
+  </div>
+
+  <!-- Beneficiaries Panel -->
+  <div class="panel" id="tab-bens">
+    <div class="card">
+      <div class="card-hd">Saved Beneficiaries</div>
+      {% if bens %}
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Nickname</th><th>Account No</th><th>Name</th><th>Bank</th><th>Added</th></tr></thead>
+          <tbody>
+            {% for b in bens %}
+            <tr>
+              <td class="muted" style="font-size:.75rem">{{ b.id }}</td>
+              <td style="font-weight:600">{{ b.nickname }}</td>
+              <td class="mono" style="font-size:.82rem;color:var(--amber)">{{ b.ben_acc_no }}</td>
+              <td>{{ b.ben_name }}</td>
+              <td><span class="badge b-sky">{{ b.ben_bank }}</span></td>
+              <td class="muted" style="font-size:.78rem">{{ b.added_at[:10] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="muted" style="padding:2rem;text-align:center">No beneficiaries added.</p>{% endif %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(name){
+  const panels=['info','txns','loans','fds','bens'];
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',panels[i]===name);
+    document.getElementById('tab-'+panels[i]).classList.toggle('active',panels[i]===name);
+  });
+}
+</script>
+</body>
+</html>

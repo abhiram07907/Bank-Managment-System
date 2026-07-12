@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Email Settings — NexusBank Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--void:#050810;--base:#080e1c;--card:#0f1c32;--lift:#142240;--rim:rgba(255,255,255,.07);--rim2:rgba(255,255,255,.12);--amber:#f5a623;--emerald:#00e5a0;--rose:#ff5c7a;--sky:#4db8ff;--ink:#dde5f4;--fog:#7b8fad}
+body{font-family:'Jost',sans-serif;background:var(--void);color:var(--ink);min-height:100vh}
+h1,h2,h3{font-family:'Cormorant Garamond',serif}
+a{color:var(--amber);text-decoration:none}
+.anav{background:rgba(8,14,28,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--rim);padding:.9rem 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.anav-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--amber)}
+.tag{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.25);padding:.2rem .8rem;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.07em}
+.lnk{font-size:.85rem;color:var(--fog);padding:.35rem .85rem;border-radius:7px;border:1px solid var(--rim);transition:all .2s}
+.lnk:hover{color:var(--ink);background:var(--lift)}
+.wrap{max-width:1080px;margin:0 auto;padding:2.5rem 1.75rem 5rem}
+.page-title{font-size:2rem;font-weight:700;margin-bottom:.4rem}
+.page-sub{color:var(--fog);font-size:.95rem;margin-bottom:2rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.75rem}
+@media(max-width:800px){.g2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--rim);border-radius:16px;padding:1.75rem 2rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(140deg,rgba(255,255,255,.02) 0%,transparent 50%);pointer-events:none}
+.card-hd{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;margin-bottom:1.4rem;display:flex;align-items:center;gap:.6rem}
+.status-on {background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem}
+.status-off{background:rgba(255,92,122,.07);border:1px solid rgba(255,92,122,.18);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-on{background:var(--emerald);box-shadow:0 0 8px rgba(0,229,160,.6)}
+.dot-off{background:var(--rose);box-shadow:0 0 8px rgba(255,92,122,.5)}
+.ptabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.ptab{padding:.5rem 1rem;border-radius:9px;border:1px solid var(--rim2);background:rgba(255,255,255,.03);color:var(--fog);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.ptab:hover{color:var(--ink);background:var(--lift)}
+.ptab.on{background:rgba(245,166,35,.12);color:var(--amber);border-color:rgba(245,166,35,.3)}
+.guide{border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.84rem;line-height:1.7;display:none}
+.guide.show{display:block}
+.guide ol{margin-left:1.1rem;color:var(--fog)}
+.guide ol li{margin-bottom:.25rem}
+.guide h4{font-family:'Jost',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.5rem}
+.guide code{background:rgba(255,255,255,.1);padding:.1rem .4rem;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--emerald)}
+.guide .note{margin-top:.7rem;padding:.6rem .9rem;border-radius:8px;font-size:.8rem}
+.g-gmail   {background:rgba(234,67,53,.08); border:1px solid rgba(234,67,53,.2)}
+.g-outlook {background:rgba(0,120,212,.08); border:1px solid rgba(0,120,212,.2)}
+.g-yahoo   {background:rgba(115,37,186,.08);border:1px solid rgba(115,37,186,.2)}
+.g-mailtrap{background:rgba(0,229,160,.08); border:1px solid rgba(0,229,160,.2)}
+.g-custom  {background:rgba(255,255,255,.02);border:1px solid var(--rim2)}
+.fg{margin-bottom:1.15rem}
+.fl{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fog);margin-bottom:.45rem}
+.fi{width:100%;padding:.82rem 1.1rem;background:rgba(255,255,255,.03);border:1px solid var(--rim2);border-radius:10px;color:var(--ink);font-family:'Jost',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s}
+.fi:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,166,35,.1)}
+.fi::placeholder{color:rgba(255,255,255,.18)}
+select.fi option{background:var(--base)}
+.toggle-row{display:flex;align-items:center;gap:.9rem;margin-bottom:1.4rem;background:rgba(255,255,255,.02);border:1px solid var(--rim2);border-radius:10px;padding:.85rem 1.1rem}
+.toggle{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.12);border-radius:26px;transition:.3s}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:4px;bottom:4px;background:#fff;border-radius:50%;transition:.3s;opacity:.5}
+input:checked+.slider{background:var(--emerald)}
+input:checked+.slider:before{transform:translateX(22px);opacity:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.82rem 1.75rem;border-radius:10px;border:none;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;font-size:.9rem;text-decoration:none;transition:all .22s}
+.btn-primary{background:var(--emerald);color:#050810}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,160,.3)}
+.btn-amber{background:var(--amber);color:#050810}
+.btn-amber:hover{opacity:.88}
+.btn-sky{background:rgba(77,184,255,.12);border:1px solid rgba(77,184,255,.25);color:var(--sky)}
+.btn-sky:hover{background:rgba(77,184,255,.22)}
+.btn-full{width:100%}
+.btn-sm{padding:.45rem .95rem;font-size:.8rem;border-radius:8px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{border-bottom:1px solid var(--rim2)}
+th{padding:.75rem 1rem;text-align:left;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fog);white-space:nowrap}
+td{padding:.8rem 1rem;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(255,255,255,.02)}
+.flashes{list-style:none;margin-bottom:1.75rem}
+.flash{padding:.85rem 1.2rem;border-radius:10px;font-size:.9rem;margin-bottom:.5rem;border-left:3px solid;display:flex;align-items:center;gap:.75rem;animation:fin .3s ease}
+@keyframes fin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.flash.success{background:rgba(0,229,160,.08);border-color:var(--emerald);color:var(--emerald)}
+.flash.error{background:rgba(255,92,122,.08);border-color:var(--rose);color:var(--rose)}
+.flash.warning{background:rgba(245,166,35,.08);border-color:var(--amber);color:var(--amber)}
+.flash.info{background:rgba(77,184,255,.08);border-color:var(--sky);color:var(--sky)}
+.mono{font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+.muted{color:var(--fog)}
+.mb{margin-bottom:1rem}.mt{margin-top:1rem}.mt2{margin-top:1.5rem}
+</style>
+</head>
+<body>
+
+<nav class="anav">
+  <div class="anav-logo">👑 NexusBank Admin</div>
+  <span class="tag">📧 EMAIL SETTINGS</span>
+  <a href="{{ url_for('admin_dashboard') }}" class="lnk" style="margin-left:auto">← Dashboard</a>
+  <a href="{{ url_for('admin_logout') }}" class="lnk" style="color:var(--rose);border-color:rgba(255,92,122,.2)">Logout</a>
+</nav>
+
+<div class="wrap">
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+      <ul class="flashes">
+        {% for c,m in msgs %}
+          <li class="flash {{ c }}">{% if c=='success' %}✓{% elif c=='error' %}✕{% elif c=='warning' %}⚠{% else %}ℹ{% endif %} {{ m }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <div class="page-title">📧 Email Settings</div>
+  <p class="page-sub">Send account details &amp; transaction alerts to customers automatically</p>
+
+  {% set is_on = cfg.get('email_enabled','0')=='1' and cfg.get('email_user','') %}
+  {% if is_on %}
+  <div class="status-on">
+    <div class="dot dot-on"></div>
+    <strong style="color:var(--emerald)">Email Active</strong>
+    <span class="muted" style="font-size:.85rem;margin-left:.5rem">
+      Provider: <strong style="color:var(--amber)">{{ cfg.get('email_provider','gmail')|title }}</strong> &nbsp;·&nbsp;
+      Account: <span class="mono" style="color:var(--emerald);font-size:.82rem">{{ cfg.get('email_user') }}</span>
+    </span>
+  </div>
+  {% else %}
+  <div class="status-off">
+    <div class="dot dot-off"></div>
+    <strong style="color:var(--rose)">Email Disabled</strong>
+    <span class="muted" style="font-size:.85rem;margin-left:.5rem">Pick a provider below and enter credentials to enable.</span>
+  </div>
+  {% endif %}
+
+  <div class="g2" style="align-items:start">
+    <div>
+      <div class="card">
+        <div class="card-hd">⚙️ SMTP Configuration</div>
+
+        <!-- Provider Tabs -->
+        {% set cur = cfg.get('email_provider','gmail') %}
+        <div class="ptabs">
+          <div class="ptab {% if cur=='gmail'    %}on{% endif %}" onclick="pick('gmail')">    📧 Gmail</div>
+          <div class="ptab {% if cur=='outlook'  %}on{% endif %}" onclick="pick('outlook')">  💙 Outlook</div>
+          <div class="ptab {% if cur=='yahoo'    %}on{% endif %}" onclick="pick('yahoo')">    🟣 Yahoo</div>
+          <div class="ptab {% if cur=='mailtrap' %}on{% endif %}" onclick="pick('mailtrap')"> 🧪 Mailtrap</div>
+          <div class="ptab {% if cur=='custom'   %}on{% endif %}" onclick="pick('custom')">   🔧 Custom</div>
+        </div>
+
+        <!-- Guides -->
+        <div id="g-gmail" class="guide g-gmail {% if cur=='gmail' %}show{% endif %}">
+          <h4>📧 Gmail — Requires 2-Step Verification</h4>
+          <ol>
+            <li>Go to <a href="https://myaccount.google.com/security" target="_blank">myaccount.google.com/security</a> → turn on <strong>2-Step Verification</strong></li>
+            <li>Then visit <a href="https://myaccount.google.com/apppasswords" target="_blank">myaccount.google.com/apppasswords</a></li>
+            <li>App: <code>Mail</code> · Device: <code>Other</code> · Name: <code>NexusBank</code> → Generate</li>
+            <li>Copy the 16-character password and paste it below</li>
+          </ol>
+          <div class="note" style="background:rgba(234,67,53,.1);color:rgba(255,150,140,.9)">
+            ⚠ If you see "Setting not available for your account" — your account is managed by a school/organization. Use <strong>Outlook</strong> or <strong>Mailtrap</strong> instead.
+          </div>
+        </div>
+
+        <div id="g-outlook" class="guide g-outlook {% if cur=='outlook' %}show{% endif %}">
+          <h4>💙 Outlook / Hotmail — Easiest Option!</h4>
+          <ol>
+            <li>Use your full Outlook email: <code>yourname@outlook.com</code> or <code>@hotmail.com</code></li>
+            <li>Enter your <strong>regular Outlook password</strong> — no app password needed in most cases</li>
+            <li>If it fails: go to <a href="https://account.live.com/proofs/Manage" target="_blank">Microsoft Account Security</a> → App passwords → Create one</li>
+          </ol>
+          <div class="note" style="background:rgba(0,120,212,.12);color:rgba(100,180,255,.9)">
+            ✅ Recommended! Works with regular password — no 2FA required for most accounts.
+          </div>
+        </div>
+
+        <div id="g-yahoo" class="guide g-yahoo {% if cur=='yahoo' %}show{% endif %}">
+          <h4>🟣 Yahoo Mail</h4>
+          <ol>
+            <li>Go to <a href="https://login.yahoo.com/account/security" target="_blank">Yahoo Account Security</a> → enable 2-Step Verification</li>
+            <li>Generate an App Password for <code>Other App</code></li>
+            <li>Use your Yahoo email + the generated app password below</li>
+          </ol>
+        </div>
+
+        <div id="g-mailtrap" class="guide g-mailtrap {% if cur=='mailtrap' %}show{% endif %}">
+          <h4>🧪 Mailtrap — Best for Testing (100% Free, No Setup Hassle)</h4>
+          <ol>
+            <li>Go to <a href="https://mailtrap.io/register/signup" target="_blank">mailtrap.io</a> → sign up free (takes 30 seconds)</li>
+            <li>Dashboard → <strong>Email Testing</strong> → <strong>Inboxes</strong> → click your inbox</li>
+            <li>Go to <strong>SMTP Settings</strong> tab → copy <strong>Username</strong> and <strong>Password</strong></li>
+            <li>Paste them below — all emails go to your Mailtrap inbox (safe, not real customers)</li>
+          </ol>
+          <div class="note" style="background:rgba(0,229,160,.1);color:rgba(0,229,160,.9)">
+            ✅ Perfect for student projects! Catches all emails in a dashboard — zero risk of spamming real users.
+          </div>
+        </div>
+
+        <div id="g-custom" class="guide g-custom {% if cur=='custom' %}show{% endif %}">
+          <h4>🔧 Custom SMTP Server</h4>
+          <p style="color:var(--fog)">Use any SMTP — Zoho Mail, college email, office server, SendGrid, etc. Enter host and port below.</p>
+        </div>
+
+        <!-- FORM -->
+        <form method="POST">
+          <input type="hidden" name="action" value="save"/>
+          <input type="hidden" name="email_provider" id="prov_val" value="{{ cur }}"/>
+
+          <div class="toggle-row">
+            <label class="toggle">
+              <input type="checkbox" name="email_enabled" {% if cfg.get('email_enabled','0')=='1' %}checked{% endif %}/>
+              <span class="slider"></span>
+            </label>
+            <span style="font-size:.92rem;font-weight:500">Enable Email Notifications</span>
+          </div>
+
+          <div class="fg">
+            <label class="fl" id="lbl-user">Email Address</label>
+            <input class="fi" name="email_user" type="email"
+                   value="{{ cfg.get('email_user','') }}"
+                   placeholder="yourbank@gmail.com"/>
+          </div>
+
+          <div class="fg">
+            <label class="fl" id="lbl-pass">App Password / Password</label>
+            <input class="fi mono" name="email_password" type="password"
+                   value="{{ cfg.get('email_password','') }}"
+                   placeholder="Password" autocomplete="new-password"/>
+          </div>
+
+          <div id="custom-fields" style="display:{% if cur=='custom' %}block{% else %}none{% endif %}">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="fg">
+                <label class="fl">SMTP Host</label>
+                <input class="fi mono" name="custom_host" value="{{ cfg.get('custom_host','') }}" placeholder="smtp.example.com"/>
+              </div>
+              <div class="fg">
+                <label class="fl">Port</label>
+                <input class="fi mono" name="custom_port" value="{{ cfg.get('custom_port','587') }}" placeholder="587"/>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" style="padding:.95rem;margin-top:.25rem">
+            💾 Save Settings
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+      <div class="card">
+        <div class="card-hd">🧪 Send Test Email</div>
+        <p class="muted mb" style="font-size:.87rem;line-height:1.65">Verify your config by sending a test. Save settings first!</p>
+        <form method="POST">
+          <input type="hidden" name="action" value="test"/>
+          <div class="fg" style="margin-bottom:1.25rem">
+            <label class="fl">Recipient</label>
+            <input class="fi" name="test_email" type="email" placeholder="your@email.com" required/>
+          </div>
+          <button type="submit" class="btn btn-sky btn-full">📤 Send Test Email</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">🔁 Resend Welcome Email</div>
+        <p class="muted mb" style="font-size:.87rem;line-height:1.65">Manually send account details to any customer.</p>
+        <form method="POST">
+          <input type="hidden" name="action" value="resend_welcome"/>
+          <div class="fg" style="margin-bottom:1.25rem">
+            <label class="fl">Customer</label>
+            <select class="fi" name="acc_no">
+              {% for u in users %}
+              <option value="{{ u.account_no }}">{{ u.name }} — {{ u.account_no }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-amber btn-full"
+                  onclick="return confirm('Resend welcome email?')">
+            📨 Resend Welcome Email
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">📬 Automatic Email Triggers</div>
+        {% for ico, title, desc in [('🏦','Account Opening','Welcome + full account details'),('💰','Deposit','Credit alert + new balance'),('💸','Withdrawal','Debit alert + remaining balance'),('🔄','Fund Transfer','Alert to both sender and receiver')] %}
+        <div style="display:flex;align-items:center;gap:.85rem;padding:.7rem;background:rgba(255,255,255,.02);border:1px solid var(--rim);border-radius:9px;margin-bottom:.55rem">
+          <span style="font-size:1.2rem">{{ ico }}</span>
+          <div><div style="font-size:.87rem;font-weight:600">{{ title }}</div><div style="font-size:.77rem;color:var(--fog)">{{ desc }}</div></div>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card mt2">
+    <div class="card-hd">👥 Customer Email Directory</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Account No</th><th>Email</th><th>Resend</th></tr></thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td class="muted" style="font-size:.78rem">{{ loop.index }}</td>
+            <td style="font-weight:600">{{ u.name }}</td>
+            <td class="mono" style="font-size:.82rem;color:var(--amber)">{{ u.account_no }}</td>
+            <td class="muted" style="font-size:.85rem">{{ u.email }}</td>
+            <td>
+              <form method="POST" style="display:inline">
+                <input type="hidden" name="action" value="resend_welcome"/>
+                <input type="hidden" name="acc_no" value="{{ u.account_no }}"/>
+                <button type="submit" class="btn btn-sky btn-sm" onclick="return confirm('Resend to {{ u.name }}?')">📨 Resend</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const labels = {
+  gmail:    ['Gmail Address','App Password (16 chars — from myaccount.google.com/apppasswords)'],
+  outlook:  ['Outlook / Hotmail Email','Outlook Password (or App Password)'],
+  yahoo:    ['Yahoo Email','Yahoo App Password'],
+  mailtrap: ['Mailtrap Username','Mailtrap Password'],
+  custom:   ['Email / Username','Password'],
+};
+function pick(p){
+  document.getElementById('prov_val').value = p;
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
+  event.currentTarget.classList.add('on');
+  document.querySelectorAll('.guide').forEach(g => g.classList.remove('show'));
+  const g = document.getElementById('g-'+p); if(g) g.classList.add('show');
+  document.getElementById('custom-fields').style.display = p==='custom'?'block':'none';
+  const L = labels[p]||labels.gmail;
+  document.getElementById('lbl-user').textContent = L[0];
+  document.getElementById('lbl-pass').textContent = L[1];
+}
+document.querySelectorAll('.flash').forEach(f=>{
+  setTimeout(()=>{f.style.transition='opacity .5s';f.style.opacity='0';setTimeout(()=>f.remove(),500);},5000);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block ticker %}{% endblock %}
+{% block title %}Admin Login — NexusBank{% endblock %}
+{% block content %}
+<div class="auth-box">
+  <div class="auth-logo" style="background:var(--amber-dim);border-color:rgba(245,166,35,.3)">👑</div>
+  <h1 class="auth-title">Admin Panel</h1>
+  <p class="auth-sub">Authorized personnel only</p>
+  <div class="card">
+    <form method="POST">
+      <div class="fg"><label class="fl">Username</label><input class="fi" name="username" type="text" placeholder="admin" required/></div>
+      <div class="fg" style="margin-bottom:1.75rem"><label class="fl">Password</label><input class="fi" name="password" type="password" placeholder="••••••••" required/></div>
+      <button type="submit" class="btn btn-amber btn-full" style="padding:.95rem">Sign In as Admin →</button>
+    </form>
+  </div>
+  <div class="auth-footer"><a href="{{ url_for('login') }}" style="color:var(--fog);font-size:.82rem">← Customer Login</a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}NexusBank — Next-Gen Banking{% endblock %}
+{% block content %}
+<div class="hero">
+  <div class="hero-tag">◈ Secure &nbsp;·&nbsp; Intelligent &nbsp;·&nbsp; Modern</div>
+  <h1>Banking Reimagined<br/>for the Digital Age</h1>
+  <p class="hero-p">Open your account in 60 seconds. Manage deposits, loans, fixed deposits, and transfers — all from one intelligent platform.</p>
+  <div class="hero-btns">
+    <a href="{{ url_for('register') }}" class="btn btn-primary" style="padding:1rem 2.5rem;font-size:1rem">Open Free Account →</a>
+    <a href="{{ url_for('login') }}"    class="btn btn-outline"  style="padding:1rem 2rem;font-size:1rem">Sign In</a>
+  </div>
+</div>
+
+<div class="feat-grid">
+  <div class="feat"><div class="feat-ic">🏦</div><h3>Savings & Current Accounts</h3><p>Open a savings or current account instantly with a minimum deposit of just ₹500.</p></div>
+  <div class="feat"><div class="feat-ic">📈</div><h3>Fixed Deposits</h3><p>Earn up to 7.5% p.a. on fixed deposits ranging from 6 months to 5 years.</p></div>
+  <div class="feat"><div class="feat-ic">💳</div><h3>Personal & Home Loans</h3><p>Apply for Personal, Home, Car, or Education loans with transparent EMI schedules.</p></div>
+  <div class="feat"><div class="feat-ic">⚡</div><h3>Instant Transfers</h3><p>Transfer money to any NexusBank account in real time with full audit trail.</p></div>
+  <div class="feat"><div class="feat-ic">🔐</div><h3>Bank-Grade Security</h3><p>SHA-256 encrypted PINs, PIN-verified transactions, and admin-monitored accounts.</p></div>
+  <div class="feat"><div class="feat-ic">🎧</div><h3>24/7 Support</h3><p>Raise a support ticket anytime. Our team resolves issues within 24 hours.</p></div>
+</div>
+{% endblock %}

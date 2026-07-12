@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Withdraw — NexusBank{% endblock %}
+{% block content %}
+<div style="max-width:520px;margin:0 auto">
+  <div class="section-title">💸 Withdraw Money</div>
+  <p class="section-sub">Available: <strong class="em" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem">₹{{ "{:,.2f}".format(u.balance) }}</strong></p>
+  <div class="card">
+    <form method="POST">
+      <div class="fg"><label class="fl">Amount (₹) *</label><input class="fi" name="amount" type="number" min="1" step="0.01" placeholder="Enter amount" style="font-size:1.1rem" required/></div>
+      <div class="fg"><label class="fl">Category</label>
+        <select class="fi" name="category">
+          <option value="Debit">General</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Food">Food & Dining</option>
+          <option value="Bills">Bills & Utilities</option>
+          <option value="Travel">Travel</option>
+          <option value="Medical">Medical</option>
+          <option value="Education">Education</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Description</label><input class="fi" name="description" type="text" placeholder="e.g. ATM withdrawal, bill payment..."/></div>
+      <div class="fg" style="margin-bottom:1.75rem"><label class="fl">Confirm PIN *</label><input class="fi" name="pin" type="password" maxlength="4" placeholder="••••" required/></div>
+      <button type="submit" class="btn btn-primary btn-full" style="padding:.95rem">Withdraw Now →</button>
+    </form>
+  </div>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-ghost btn-full mt">← Back to Dashboard</a>
+</div>
+{% endblock %}

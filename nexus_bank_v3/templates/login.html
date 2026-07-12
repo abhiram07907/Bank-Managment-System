@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Login — NexusBank{% endblock %}
+{% block content %}
+<div class="auth-box">
+  <div class="auth-logo">◈</div>
+  <h1 class="auth-title">Welcome Back</h1>
+  <p class="auth-sub">Sign in to your NexusBank account</p>
+  <div class="card">
+    <form method="POST">
+      <div class="fg">
+        <label class="fl">Account Number</label>
+        <input class="fi mono" name="account_no" type="text" placeholder="NXS123456789" style="text-transform:uppercase" autocomplete="off" required/>
+      </div>
+      <div class="fg" style="margin-bottom:1.75rem">
+        <label class="fl">4-Digit PIN</label>
+        <input class="fi" name="pin" type="password" maxlength="4" placeholder="••••" required/>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="padding:.95rem">Sign In →</button>
+    </form>
+  </div>
+  <div class="auth-footer">No account? <a href="{{ url_for('register') }}">Open one free →</a></div>
+  <div class="auth-footer" style="margin-top:.5rem"><a href="{{ url_for('admin_login') }}" style="color:var(--fog);font-size:.82rem">Admin Panel →</a></div>
+</div>
+{% endblock %}

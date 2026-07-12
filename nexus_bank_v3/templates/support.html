@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Support — NexusBank{% endblock %}
+{% block content %}
+<div class="section-title">🎧 Customer Support</div>
+<p class="section-sub">We typically respond within 24 hours</p>
+<div class="g2" style="align-items:start;gap:1.75rem">
+  <div class="card">
+    <div class="card-hd">📝 Raise a Ticket</div>
+    <form method="POST">
+      <div class="fg">
+        <label class="fl">Subject *</label>
+        <select class="fi" name="subject">
+          <option>Account Issue</option>
+          <option>Transaction Dispute</option>
+          <option>Loan Query</option>
+          <option>FD Related</option>
+          <option>PIN Reset Request</option>
+          <option>KYC Verification</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg" style="margin-bottom:1.5rem">
+        <label class="fl">Message *</label>
+        <textarea class="fi" name="message" placeholder="Describe your issue in detail..." style="min-height:130px" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Submit Ticket →</button>
+    </form>
+  </div>
+  <div>
+    <div class="card-hd mb">My Tickets</div>
+    {% if tickets %}
+      {% for t in tickets %}
+      <div class="card mb" style="padding:1.25rem 1.5rem">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem">
+          <div style="font-weight:600">{{ t.subject }}</div>
+          {% if t.status=='Open' %}<span class="badge b-amber">Open</span>
+          {% else %}<span class="badge b-green">Resolved</span>{% endif %}
+        </div>
+        <p style="font-size:.85rem;color:var(--fog);margin-bottom:.6rem;line-height:1.6">{{ t.message }}</p>
+        {% if t.reply %}
+        <div style="background:var(--emerald-dim);border:1px solid var(--emerald-glow);border-radius:8px;padding:.7rem .9rem;font-size:.83rem;color:var(--emerald)">
+          <strong>Admin Reply:</strong> {{ t.reply }}
+        </div>
+        {% endif %}
+        <div class="muted" style="font-size:.75rem;margin-top:.5rem">{{ t.created_at[:10] }}</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="card tc" style="padding:2.5rem"><div style="font-size:2rem;opacity:.2;margin-bottom:.8rem">🎧</div><p class="muted">No support tickets yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

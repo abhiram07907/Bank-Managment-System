@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin Dashboard — NexusBank</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--void:#050810;--base:#080e1c;--card:#0f1c32;--lift:#142240;--rim:rgba(255,255,255,.07);--amber:#f5a623;--emerald:#00e5a0;--rose:#ff5c7a;--sky:#4db8ff;--ink:#dde5f4;--fog:#7b8fad}
+body{font-family:'Jost',sans-serif;background:var(--void);color:var(--ink);min-height:100vh}
+h1,h2,h3{font-family:'Cormorant Garamond',serif}
+a{color:var(--amber);text-decoration:none}
+/* admin nav */
+.anav{background:rgba(8,14,28,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--rim);padding:.9rem 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.anav-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--amber);display:flex;align-items:center;gap:.5rem}
+.anav a.lnk{font-size:.85rem;color:var(--fog);padding:.35rem .85rem;border-radius:7px;transition:all .2s}
+.anav a.lnk:hover{color:var(--ink);background:var(--rim)}
+.tag-admin{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.25);padding:.2rem .8rem;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.07em}
+.logout{background:rgba(255,92,122,.12);color:var(--rose) !important;border:1px solid rgba(255,92,122,.2);padding:.35rem 1rem !important;border-radius:7px !important;font-weight:600 !important}
+/* wrap */
+.wrap{max-width:1280px;margin:0 auto;padding:2rem 1.75rem 5rem}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:2rem}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.sc{background:var(--card);border:1px solid var(--rim);border-radius:14px;padding:1.25rem 1.4rem}
+.sc-val{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:700;color:var(--ink)}
+.sc-lbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);margin-top:.3rem}
+/* tabs */
+.tabs{display:flex;gap:.25rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{padding:.5rem 1.25rem;border-radius:9px;font-size:.875rem;font-weight:600;cursor:pointer;background:var(--card);border:1px solid var(--rim);color:var(--fog);transition:all .2s}
+.tab.active,.tab:hover{background:rgba(245,166,35,.12);color:var(--amber);border-color:rgba(245,166,35,.25)}
+.panel{display:none}.panel.active{display:block}
+/* table */
+.card{background:var(--card);border:1px solid var(--rim);border-radius:14px;padding:1.5rem 1.75rem}
+.card-hd{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;margin-bottom:1.25rem}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{border-bottom:1px solid rgba(255,255,255,.08)}
+th{padding:.75rem 1rem;text-align:left;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fog);white-space:nowrap}
+td{padding:.8rem 1rem;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(255,255,255,.02)}
+/* badges */
+.badge{display:inline-flex;align-items:center;padding:.22rem .7rem;border-radius:20px;font-size:.72rem;font-weight:700}
+.b-green{background:rgba(0,229,160,.12);color:var(--emerald)}
+.b-red{background:rgba(255,92,122,.12);color:var(--rose)}
+.b-amber{background:rgba(245,166,35,.12);color:var(--amber)}
+.b-sky{background:rgba(77,184,255,.12);color:var(--sky)}
+/* forms inline */
+.fi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:var(--ink);padding:.4rem .75rem;font-family:'Jost',sans-serif;font-size:.83rem;outline:none}
+.fi:focus{border-color:var(--amber)}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:8px;border:none;cursor:pointer;font-family:'Jost',sans-serif;font-weight:600;font-size:.8rem;text-decoration:none;transition:all .2s}
+.btn-approve{background:rgba(0,229,160,.12);color:var(--emerald);border:1px solid rgba(0,229,160,.2)}
+.btn-approve:hover{background:rgba(0,229,160,.2)}
+.btn-reject{background:rgba(255,92,122,.12);color:var(--rose);border:1px solid rgba(255,92,122,.2)}
+.btn-reject:hover{background:rgba(255,92,122,.2)}
+.btn-amber{background:var(--amber);color:#050810}
+.btn-amber:hover{opacity:.88}
+.muted{color:var(--fog)}
+.mono{font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+.flashes{list-style:none;margin-bottom:1.5rem}
+.flash{padding:.8rem 1.1rem;border-radius:9px;font-size:.88rem;margin-bottom:.5rem;border-left:3px solid}
+.flash.success{background:rgba(0,229,160,.08);border-color:var(--emerald);color:var(--emerald)}
+.flash.error{background:rgba(255,92,122,.08);border-color:var(--rose);color:var(--rose)}
+.flash.info{background:rgba(77,184,255,.08);border-color:var(--sky);color:var(--sky)}
+</style>
+</head>
+<body>
+<nav class="anav">
+  <div class="anav-logo">👑 NexusBank Admin</div>
+  <span class="tag-admin">ADMIN PANEL</span>
+  <span style="margin-left:auto;color:var(--fog);font-size:.85rem">Logged in as: <strong style="color:var(--amber)">{{ session.admin }}</strong></span>
+  <a href="{{ url_for('admin_email_settings') }}" class="lnk" style="color:var(--sky);border-color:rgba(77,184,255,.2)">📧 Email Settings</a>
+  <a href="{{ url_for('admin_logout') }}" class="lnk logout">Logout</a>
+</nav>
+
+<div class="wrap">
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}<ul class="flashes">{% for c,m in msgs %}<li class="flash {{c}}">{{ m }}</li>{% endfor %}</ul>{% endif %}
+  {% endwith %}
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="sc"><div class="sc-val">{{ stats.total_users }}</div><div class="sc-lbl">Total Customers</div></div>
+    <div class="sc"><div class="sc-val" style="font-size:1.3rem">₹{{ "{:,.0f}".format(stats.total_balance) }}</div><div class="sc-lbl">Total Deposits</div></div>
+    <div class="sc"><div class="sc-val">{{ stats.total_txns }}</div><div class="sc-lbl">Transactions</div></div>
+    <div class="sc"><div class="sc-val" style="color:var(--amber)">{{ stats.pending_loans }}</div><div class="sc-lbl">Pending Loans</div></div>
+    <div class="sc"><div class="sc-val" style="color:var(--rose)">{{ stats.open_tickets }}</div><div class="sc-lbl">Open Tickets</div></div>
+    <div class="sc"><div class="sc-val" style="color:var(--emerald)">{{ stats.total_fds }}</div><div class="sc-lbl">Active FDs</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('customers')">👥 Customers ({{ users|length }})</div>
+    <div class="tab" onclick="showTab('transactions')">💳 Transactions</div>
+    <div class="tab" onclick="showTab('loans')">🏛️ Loans{% if stats.pending_loans %} ({{ stats.pending_loans }} pending){% endif %}</div>
+    <div class="tab" onclick="showTab('tickets')">🎧 Support{% if stats.open_tickets %} ({{ stats.open_tickets }} open){% endif %}</div>
+  </div>
+
+  <!-- Customers Tab -->
+  <div class="panel active" id="tab-customers">
+    <div class="card">
+      <div class="card-hd">All Customers</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Account No</th><th>Name</th><th>Email</th><th>Phone</th><th>Type</th><th>Balance</th><th>KYC</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td class="mono" style="font-size:.78rem;color:var(--amber)">{{ u.account_no }}</td>
+              <td style="font-weight:600">{{ u.name }}</td>
+              <td class="muted" style="font-size:.82rem">{{ u.email }}</td>
+              <td class="muted">{{ u.phone }}</td>
+              <td><span class="badge b-sky">{{ u.account_type }}</span></td>
+              <td style="font-weight:600">₹{{ "{:,.0f}".format(u.balance) }}</td>
+              <td>{% if u.kyc_verified %}<span class="badge b-green">✓</span>{% else %}<span class="badge b-amber">Pending</span>{% endif %}</td>
+              <td>{% if u.status=='Active' %}<span class="badge b-green">Active</span>{% else %}<span class="badge b-red">Frozen</span>{% endif %}</td>
+              <td class="muted" style="font-size:.78rem">{{ u.created_at[:10] }}</td>
+              <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+                <a href="{{ url_for('admin_user_detail', acc_no=u.account_no) }}" class="btn btn-approve" style="font-size:.75rem;padding:.35rem .8rem">👁 View</a>
+                <form method="POST" action="{{ url_for('admin_freeze', acc_no=u.account_no) }}" style="display:inline">
+                  <button type="submit" class="btn {% if u.status=='Active' %}btn-reject{% else %}btn-approve{% endif %}" style="font-size:.75rem;padding:.35rem .8rem">
+                    {% if u.status=='Active' %}🔒 Freeze{% else %}🔓 Unfreeze{% endif %}
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions Tab -->
+  <div class="panel" id="tab-transactions">
+    <div class="card">
+      <div class="card-hd">Recent Transactions (Last 20)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Account</th><th>Customer</th><th>Type</th><th>Amount</th><th>Balance After</th><th>Description</th><th>Time</th></tr></thead>
+          <tbody>
+            {% for t in txns %}
+            <tr>
+              <td class="muted" style="font-size:.75rem">{{ t.id }}</td>
+              <td class="mono" style="font-size:.78rem;color:var(--amber)">{{ t.account_no }}</td>
+              <td style="font-weight:500">{{ t.name }}</td>
+              <td>
+                {% if 'Deposit' in t.type or 'Received' in t.type or 'Opened' in t.type %}<span class="badge b-green">{{ t.type }}</span>
+                {% elif 'Withdrawal' in t.type or 'Sent' in t.type %}<span class="badge b-red">{{ t.type }}</span>
+                {% else %}<span class="badge b-sky">{{ t.type }}</span>{% endif %}
+              </td>
+              <td style="font-weight:600">₹{{ "{:,.2f}".format(t.amount) }}</td>
+              <td class="muted">₹{{ "{:,.2f}".format(t.balance_after) }}</td>
+              <td class="muted" style="font-size:.82rem;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.description or '—' }}</td>
+              <td class="muted mono" style="font-size:.75rem;white-space:nowrap">{{ t.timestamp }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loans Tab -->
+  <div class="panel" id="tab-loans">
+    <div class="card">
+      <div class="card-hd">All Loan Applications</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Customer</th><th>Account</th><th>Type</th><th>Principal</th><th>Rate</th><th>EMI</th><th>Outstanding</th><th>Status</th><th>Applied</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for l in loans %}
+            <tr>
+              <td class="muted" style="font-size:.75rem">{{ l.id }}</td>
+              <td style="font-weight:500">{{ l.name }}</td>
+              <td class="mono" style="font-size:.78rem;color:var(--amber)">{{ l.account_no }}</td>
+              <td><span class="badge b-sky">{{ l.loan_type }}</span></td>
+              <td style="font-weight:600">₹{{ "{:,.0f}".format(l.principal) }}</td>
+              <td class="muted">{{ l.interest_rate }}%</td>
+              <td>₹{{ "{:,.0f}".format(l.emi) }}/mo</td>
+              <td>₹{{ "{:,.0f}".format(l.outstanding) }}</td>
+              <td>
+                {% if l.status=='Pending' %}<span class="badge b-amber">Pending</span>
+                {% elif l.status=='Approved' %}<span class="badge b-green">Approved</span>
+                {% elif l.status=='Rejected' %}<span class="badge b-red">Rejected</span>
+                {% else %}<span class="badge" style="background:var(--rim);color:var(--fog)">{{ l.status }}</span>{% endif %}
+              </td>
+              <td class="muted" style="font-size:.78rem">{{ l.applied_at[:10] }}</td>
+              <td>
+                {% if l.status=='Pending' %}
+                <form method="POST" action="{{ url_for('admin_loan_action', lid=l.id, action='approve') }}" style="display:inline">
+                  <button type="submit" class="btn btn-approve">✓ Approve</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_loan_action', lid=l.id, action='reject') }}" style="display:inline;margin-left:.4rem">
+                  <button type="submit" class="btn btn-reject">✕ Reject</button>
+                </form>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Support Tickets Tab -->
+  <div class="panel" id="tab-tickets">
+    <div class="card">
+      <div class="card-hd">Support Tickets</div>
+      {% for t in tickets %}
+      <div style="background:var(--lift);border:1px solid var(--rim);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem">
+          <div>
+            <strong>{{ t.subject }}</strong>
+            <span class="muted" style="font-size:.8rem;margin-left:.75rem">{{ t.name }} · {{ t.account_no }} · {{ t.created_at[:10] }}</span>
+          </div>
+          {% if t.status=='Open' %}<span class="badge b-amber">Open</span>{% else %}<span class="badge b-green">Resolved</span>{% endif %}
+        </div>
+        <p style="font-size:.875rem;color:var(--fog);margin-bottom:.75rem;line-height:1.6">{{ t.message }}</p>
+        {% if t.reply %}
+          <div style="background:rgba(0,229,160,.07);border-left:2px solid var(--emerald);padding:.6rem .9rem;font-size:.83rem;color:var(--emerald);border-radius:0 6px 6px 0">Admin: {{ t.reply }}</div>
+        {% elif t.status=='Open' %}
+          <form method="POST" action="{{ url_for('admin_ticket_reply', tid=t.id) }}" style="display:flex;gap:.6rem;margin-top:.5rem">
+            <input class="fi" name="reply" type="text" placeholder="Type your reply..." style="flex:1" required/>
+            <button type="submit" class="btn btn-amber" style="padding:.45rem 1.1rem">Reply & Resolve</button>
+          </form>
+        {% endif %}
+      </div>
+      {% else %}
+        <div style="text-align:center;padding:2.5rem;color:var(--fog)">No support tickets yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const panels=['customers','transactions','loans','tickets'];
+    t.classList.toggle('active', panels[i]===name);
+    document.getElementById('tab-'+panels[i]).classList.toggle('active', panels[i]===name);
+  });
+}
+</script>
+</body>
+</html>

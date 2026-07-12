@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Transfer — NexusBank{% endblock %}
+{% block content %}
+<div style="max-width:580px;margin:0 auto">
+  <div class="section-title">🔄 Fund Transfer</div>
+  <p class="section-sub">Available: <strong class="em" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem">₹{{ "{:,.2f}".format(u.balance) }}</strong></p>
+
+  {% if bens %}
+  <div class="card mb2">
+    <div class="card-hd" style="margin-bottom:1rem">⚡ Quick Transfer — Saved Beneficiaries</div>
+    <div style="display:flex;flex-wrap:wrap;gap:.6rem">
+      {% for b in bens %}
+      <button type="button" onclick="document.getElementById('to_acc').value='{{ b.ben_acc_no }}'"
+              class="btn btn-ghost btn-sm" style="font-size:.78rem">
+        {{ b.nickname }} <span class="muted mono" style="font-size:.7rem">{{ b.ben_acc_no }}</span>
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <form method="POST">
+      <div class="fg"><label class="fl">Recipient Account Number *</label><input class="fi mono" id="to_acc" name="to_account" type="text" placeholder="NXS123456789" style="text-transform:uppercase" autocomplete="off" required/></div>
+      <div class="fg"><label class="fl">Amount (₹) *</label><input class="fi" name="amount" type="number" min="1" step="0.01" placeholder="Enter amount" style="font-size:1.1rem" required/></div>
+      <div class="fg"><label class="fl">Remarks</label><input class="fi" name="description" type="text" placeholder="e.g. Rent, Reimbursement, Gift..."/></div>
+      <div class="fg" style="margin-bottom:1.75rem"><label class="fl">Confirm PIN *</label><input class="fi" name="pin" type="password" maxlength="4" placeholder="••••" required/></div>
+      <button type="submit" class="btn btn-primary btn-full" style="padding:.95rem">Transfer Now →</button>
+    </form>
+  </div>
+  <div class="g2 mt">
+    <a href="{{ url_for('dashboard') }}"   class="btn btn-ghost btn-full">← Dashboard</a>
+    <a href="{{ url_for('beneficiaries') }}" class="btn btn-outline btn-full">Manage Beneficiaries</a>
+  </div>
+</div>
+{% endblock %}

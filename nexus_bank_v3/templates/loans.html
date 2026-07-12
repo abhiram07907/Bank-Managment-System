@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Loans — NexusBank{% endblock %}
+{% block content %}
+<div class="section-title">🏛️ Loan Center</div>
+<p class="section-sub">Apply for Personal, Home, Car, or Education loans</p>
+
+<div class="g2" style="align-items:start;gap:1.75rem">
+  <!-- Apply Form -->
+  <div class="card">
+    <div class="card-hd">📋 Apply for Loan</div>
+    <form method="POST">
+      <div class="fg">
+        <label class="fl">Loan Type *</label>
+        <select class="fi" name="loan_type" id="loan_type" onchange="updateLoanInfo()">
+          {% for lt, info in loan_types.items() %}
+          <option value="{{ lt }}" data-rate="{{ info.rate }}" data-max="{{ info.max }}" data-min="{{ info.min_tenure }}" data-max-t="{{ info.max_tenure }}">{{ lt }} Loan — {{ info.rate }}% p.a.</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div id="loan-info" style="background:var(--emerald-dim);border:1px solid var(--emerald-glow);border-radius:9px;padding:.75rem 1rem;font-size:.82rem;color:var(--emerald);margin-bottom:1.2rem"></div>
+      <div class="fg"><label class="fl">Loan Amount (₹) *</label><input class="fi" name="principal" id="principal" type="number" min="10000" step="1000" placeholder="Enter amount" oninput="liveEMI()" required/></div>
+      <div class="fg"><label class="fl">Tenure (Months) *</label><input class="fi" name="tenure" id="tenure" type="number" placeholder="e.g. 24" oninput="liveEMI()" required/></div>
+      <div id="emi-preview" style="background:var(--raised);border:1px solid var(--rim);border-radius:9px;padding:.85rem 1rem;margin-bottom:1.2rem;font-size:.9rem;display:none">
+        <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span class="muted">Monthly EMI</span><strong class="em" id="emi-val">—</strong></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span class="muted">Total Payable</span><strong id="total-val">—</strong></div>
+        <div style="display:flex;justify-content:space-between"><span class="muted">Total Interest</span><strong class="am" id="int-val">—</strong></div>
+      </div>
+      <div class="fg" style="margin-bottom:1.5rem"><label class="fl">Confirm PIN *</label><input class="fi" name="pin" type="password" maxlength="4" placeholder="••••" required/></div>
+      <button type="submit" class="btn btn-primary btn-full">Submit Application →</button>
+    </form>
+  </div>
+
+  <!-- My Loans -->
+  <div>
+    <div class="card-hd mb">My Loans</div>
+    {% if my_loans %}
+      {% for l in my_loans %}
+      <div class="loan-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem">
+          <div>
+            <div class="loan-type">{{ l.loan_type }} Loan</div>
+            <div class="muted" style="font-size:.8rem">Applied: {{ l.applied_at[:10] }}</div>
+          </div>
+          {% if l.status == 'Approved' %}
+            <span class="badge b-green">✓ Approved</span>
+          {% elif l.status == 'Pending' %}
+            <span class="badge b-amber">⏳ Pending</span>
+          {% elif l.status == 'Rejected' %}
+            <span class="badge b-red">✕ Rejected</span>
+          {% else %}
+            <span class="badge b-gray">Closed</span>
+          {% endif %}
+        </div>
+        <div class="g2" style="gap:.75rem;margin-bottom:.75rem;font-size:.85rem">
+          <div><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Principal</div><strong>₹{{ "{:,.0f}".format(l.principal) }}</strong></div>
+          <div><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">EMI/month</div><strong class="em">₹{{ "{:,.2f}".format(l.emi) }}</strong></div>
+          <div><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Outstanding</div><strong class="am">₹{{ "{:,.2f}".format(l.outstanding) }}</strong></div>
+          <div><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">EMIs Paid</div><strong>{{ l.paid_emis }}/{{ l.tenure_months }}</strong></div>
+        </div>
+        {% if l.status == 'Approved' %}
+        <div class="prog-wrap"><div class="prog" style="width:{{ (l.paid_emis / l.tenure_months * 100)|round }}%"></div></div>
+        <div class="muted mt" style="font-size:.75rem;margin-bottom:.75rem">{{ (l.paid_emis / l.tenure_months * 100)|round }}% repaid</div>
+        <form method="POST" action="{{ url_for('pay_emi', lid=l.id) }}" style="display:flex;gap:.6rem">
+          <input class="fi" name="pin" type="password" maxlength="4" placeholder="PIN" style="flex:1;padding:.55rem .9rem;font-size:.85rem"/>
+          <button type="submit" class="btn btn-amber btn-sm">Pay EMI ₹{{ "{:,.0f}".format(l.emi) }}</button>
+        </form>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="card tc" style="padding:2.5rem"><div style="font-size:2rem;opacity:.2;margin-bottom:.8rem">🏛️</div><p class="muted">No loan applications yet.</p></div>
+    {% endif %}
+    <a href="{{ url_for('emi_calculator') }}" class="btn btn-ghost btn-full mt">🧮 EMI Calculator</a>
+  </div>
+</div>
+
+<script>
+const rates = {{ loan_types | tojson }};
+function updateLoanInfo(){
+  const sel = document.getElementById('loan_type');
+  const opt = sel.options[sel.selectedIndex];
+  const r=opt.dataset.rate, mx=parseInt(opt.dataset.max).toLocaleString('en-IN'), mn=opt.dataset.min, mxt=opt.dataset.maxT;
+  document.getElementById('loan-info').innerHTML = `Rate: <strong>${r}% p.a.</strong> &nbsp;|&nbsp; Max: <strong>₹${mx}</strong> &nbsp;|&nbsp; Tenure: <strong>${mn}–${mxt} months</strong>`;
+  liveEMI();
+}
+function liveEMI(){
+  const p=parseFloat(document.getElementById('principal').value);
+  const n=parseInt(document.getElementById('tenure').value);
+  const sel=document.getElementById('loan_type');
+  const r=parseFloat(sel.options[sel.selectedIndex].dataset.rate)/(12*100);
+  if(!p||!n||p<=0||n<=0){document.getElementById('emi-preview').style.display='none';return;}
+  const emi = r===0 ? p/n : p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  const total=emi*n, interest=total-p;
+  document.getElementById('emi-val').textContent  = '₹'+emi.toFixed(2);
+  document.getElementById('total-val').textContent= '₹'+total.toFixed(2);
+  document.getElementById('int-val').textContent  = '₹'+interest.toFixed(2);
+  document.getElementById('emi-preview').style.display='block';
+}
+updateLoanInfo();
+</script>
+{% endblock %}

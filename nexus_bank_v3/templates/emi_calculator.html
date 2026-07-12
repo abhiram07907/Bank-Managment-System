@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}EMI Calculator — NexusBank{% endblock %}
+{% block content %}
+<div style="max-width:600px;margin:0 auto">
+  <div class="section-title">🧮 EMI Calculator</div>
+  <p class="section-sub">Calculate your monthly installments before applying</p>
+  <div class="card">
+    <div class="g2">
+      <div class="fg"><label class="fl">Loan Type</label>
+        <select class="fi" id="c_type" onchange="updateRate()">
+          {% for lt, info in loan_types.items() %}
+          <option value="{{ info.rate }}">{{ lt }} — {{ info.rate }}% p.a.</option>
+          {% endfor %}
+          <option value="custom">Custom Rate</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Interest Rate (% p.a.)</label><input class="fi" id="c_rate" type="number" step="0.1" placeholder="e.g. 10.5" oninput="calculate()"/></div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label class="fl">Loan Amount (₹)</label><input class="fi" id="c_principal" type="number" step="1000" placeholder="e.g. 500000" oninput="calculate()"/></div>
+      <div class="fg"><label class="fl">Tenure (Months)</label><input class="fi" id="c_tenure" type="number" placeholder="e.g. 24" oninput="calculate()"/></div>
+    </div>
+    <div id="calc-result" style="display:none;background:var(--base);border:1px solid var(--rim);border-radius:var(--r-sm);padding:1.5rem;margin-top:.5rem">
+      <div class="g3" style="gap:1rem;margin-bottom:1.5rem">
+        <div class="tc"><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Monthly EMI</div><div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--emerald)" id="r-emi">—</div></div>
+        <div class="tc"><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Total Payable</div><div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700" id="r-total">—</div></div>
+        <div class="tc"><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Total Interest</div><div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--amber)" id="r-int">—</div></div>
+      </div>
+      <div style="margin-bottom:.5rem;font-size:.8rem;color:var(--fog);display:flex;justify-content:space-between"><span>Principal</span><span id="r-ppct"></span></div>
+      <div class="prog-wrap" style="height:10px;margin-bottom:.3rem"><div class="prog" id="r-prog" style="width:50%"></div></div>
+      <div style="font-size:.75rem;color:var(--fog);display:flex;justify-content:space-between"><span style="color:var(--emerald)">■ Principal</span><span style="color:var(--amber)">■ Interest</span></div>
+    </div>
+  </div>
+  <a href="{{ url_for('loans') }}" class="btn btn-primary btn-full mt">Apply for Loan →</a>
+</div>
+<script>
+function updateRate(){
+  const v=document.getElementById('c_type').value;
+  if(v!=='custom') document.getElementById('c_rate').value=v;
+  calculate();
+}
+function calculate(){
+  const p=parseFloat(document.getElementById('c_principal').value);
+  const n=parseInt(document.getElementById('c_tenure').value);
+  const r=parseFloat(document.getElementById('c_rate').value)/(12*100);
+  if(!p||!n||isNaN(r)){document.getElementById('calc-result').style.display='none';return;}
+  const emi=r===0?p/n:p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  const total=emi*n, interest=total-p;
+  const pPct=Math.round(p/total*100);
+  document.getElementById('r-emi').textContent='₹'+emi.toFixed(2);
+  document.getElementById('r-total').textContent='₹'+total.toFixed(2);
+  document.getElementById('r-int').textContent='₹'+interest.toFixed(2);
+  document.getElementById('r-ppct').textContent=pPct+'% principal · '+(100-pPct)+'% interest';
+  document.getElementById('r-prog').style.width=pPct+'%';
+  document.getElementById('calc-result').style.display='block';
+}
+updateRate();
+</script>
+{% endblock %}

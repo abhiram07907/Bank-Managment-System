@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Profile — NexusBank{% endblock %}
+{% block content %}
+<div class="section-title">👤 My Profile</div>
+<p class="section-sub">Account information and security settings</p>
+
+<div class="g2" style="align-items:start;gap:1.75rem">
+  <!-- Account Info -->
+  <div>
+    <div class="card mb2">
+      <div class="card-hd">◈ Account Details</div>
+      <div class="ir"><div class="ir-k">Account No</div><div class="ir-v mono em" style="font-size:.85rem">{{ u.account_no }}</div></div>
+      <div class="ir"><div class="ir-k">Full Name</div><div class="ir-v">{{ u.name }}</div></div>
+      <div class="ir"><div class="ir-k">Email</div><div class="ir-v" style="font-size:.88rem">{{ u.email }}</div></div>
+      <div class="ir"><div class="ir-k">Phone</div><div class="ir-v">{{ u.phone }}</div></div>
+      <div class="ir"><div class="ir-k">Date of Birth</div><div class="ir-v">{{ u.dob or '—' }}</div></div>
+      <div class="ir"><div class="ir-k">Address</div><div class="ir-v" style="font-size:.88rem">{{ u.address or '—' }}</div></div>
+      <div class="ir"><div class="ir-k">Account Type</div><div class="ir-v"><span class="badge b-sky">{{ u.account_type }}</span></div></div>
+      <div class="ir"><div class="ir-k">Status</div><div class="ir-v"><span class="badge b-green">{{ u.status }}</span></div></div>
+      <div class="ir"><div class="ir-k">KYC</div><div class="ir-v">{% if u.kyc_verified %}<span class="badge b-green">✓ Verified</span>{% else %}<span class="badge b-amber">Pending</span>{% endif %}</div></div>
+      <div class="ir"><div class="ir-k">Balance</div><div class="ir-v em" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700">₹{{ "{:,.2f}".format(u.balance) }}</div></div>
+      <div class="ir"><div class="ir-k">Member Since</div><div class="ir-v">{{ u.created_at[:10] }}</div></div>
+    </div>
+
+    <!-- Update Info -->
+    <div class="card">
+      <div class="card-hd">✏️ Update Info</div>
+      <form method="POST">
+        <input type="hidden" name="action" value="update_info"/>
+        <div class="fg"><label class="fl">Phone</label><input class="fi" name="phone" type="tel" value="{{ u.phone }}" maxlength="10"/></div>
+        <div class="fg" style="margin-bottom:1.5rem"><label class="fl">Address</label><textarea class="fi" name="address" style="min-height:80px">{{ u.address or '' }}</textarea></div>
+        <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:1.5rem">
+    <!-- Change PIN -->
+    <div class="card">
+      <div class="card-hd">🔑 Change PIN</div>
+      <form method="POST">
+        <input type="hidden" name="action" value="change_pin"/>
+        <div class="fg"><label class="fl">Current PIN</label><input class="fi" name="old_pin" type="password" maxlength="4" placeholder="••••" required/></div>
+        <div class="fg"><label class="fl">New PIN</label><input class="fi" name="new_pin" type="password" maxlength="4" placeholder="••••" required/></div>
+        <div class="fg" style="margin-bottom:1.5rem"><label class="fl">Confirm New PIN</label><input class="fi" name="confirm_pin" type="password" maxlength="4" placeholder="••••" required/></div>
+        <button type="submit" class="btn btn-primary btn-full">Update PIN →</button>
+      </form>
+    </div>
+
+    <!-- Danger Zone -->
+    <div style="background:rgba(255,92,122,.04);border:1px solid rgba(255,92,122,.18);border-radius:var(--r);padding:1.75rem">
+      <div class="card-hd ro" style="margin-bottom:1rem">⚠ Danger Zone</div>
+      <p style="font-size:.87rem;color:var(--fog);margin-bottom:1.5rem;line-height:1.65">Permanently deletes your account, all transactions, loans, FDs, and data. <strong class="ro">This cannot be undone.</strong></p>
+      <form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('FINAL WARNING: All your data will be permanently deleted. Are you absolutely sure?')">
+        <div class="fg" style="margin-bottom:1.25rem"><label class="fl">Enter PIN to confirm deletion</label><input class="fi" name="pin" type="password" maxlength="4" placeholder="••••" required style="border-color:rgba(255,92,122,.3)"/></div>
+        <button type="submit" class="btn btn-danger btn-full">Delete My Account Permanently</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

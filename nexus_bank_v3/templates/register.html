@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Open Account — NexusBank{% endblock %}
+{% block content %}
+<div style="max-width:600px;margin:0 auto">
+  <div class="auth-logo">✦</div>
+  <h1 class="auth-title">Open Your Account</h1>
+  <p class="auth-sub">Join NexusBank — free, instant, secure</p>
+  <div class="card">
+    <form method="POST">
+      <div class="g2">
+        <div class="fg"><label class="fl">Full Name *</label><input class="fi" name="name" type="text" placeholder="Ravi Kumar" required/></div>
+        <div class="fg"><label class="fl">Phone Number *</label><input class="fi" name="phone" type="tel" placeholder="9876543210" maxlength="10" required/></div>
+      </div>
+      <div class="fg"><label class="fl">Email Address *</label><input class="fi" name="email" type="email" placeholder="ravi@example.com" required/></div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Date of Birth</label><input class="fi" name="dob" type="date"/></div>
+        <div class="fg">
+          <label class="fl">Account Type *</label>
+          <select class="fi" name="account_type">
+            <option value="Savings">Savings Account</option>
+            <option value="Current">Current Account</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Address</label><textarea class="fi" name="address" placeholder="Your full address..." style="min-height:70px"></textarea></div>
+      <div class="fg"><label class="fl">Initial Deposit (₹) *</label><input class="fi" name="initial_deposit" type="number" min="500" placeholder="Minimum ₹500" required/></div>
+      <div class="g2">
+        <div class="fg"><label class="fl">Set 4-Digit PIN *</label><input class="fi" name="pin" type="password" maxlength="4" placeholder="••••" required/></div>
+        <div class="fg"><label class="fl">Confirm PIN *</label><input class="fi" name="pin2" type="password" maxlength="4" placeholder="••••" required/></div>
+      </div>
+      <div style="background:var(--emerald-dim);border:1px solid var(--emerald-glow);border-radius:9px;padding:.8rem 1rem;font-size:.82rem;color:var(--emerald);margin-bottom:1.5rem">
+        ◈ Your PIN is encrypted with SHA-256. Minimum deposit ₹500. KYC verification pending after signup.
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="padding:.95rem">Create Account →</button>
+    </form>
+  </div>
+  <div class="auth-footer">Already registered? <a href="{{ url_for('login') }}">Sign in →</a></div>
+</div>
+{% endblock %}

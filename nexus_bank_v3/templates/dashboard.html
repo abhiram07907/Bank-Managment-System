@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — NexusBank{% endblock %}
+{% block content %}
+
+<!-- Balance Hero -->
+<div class="bal-hero">
+  <div class="bal-tag">Available Balance</div>
+  <div class="bal-amt"><sup>₹</sup>{{ "{:,.2f}".format(u.balance) }}</div>
+  <div class="bal-acc">{{ u.account_no }}</div>
+  <div class="bal-chips">
+    <div class="bal-chip">Name: <strong>{{ u.name }}</strong></div>
+    <div class="bal-chip">Type: <strong>{{ u.account_type }}</strong></div>
+    <div class="bal-chip">Status: <strong style="color:var(--emerald)">{{ u.status }}</strong></div>
+    <div class="bal-chip">Since: <strong>{{ u.created_at[:10] }}</strong></div>
+    {% if u.kyc_verified %}<div class="bal-chip">KYC: <strong style="color:var(--emerald)">✓ Verified</strong></div>{% else %}<div class="bal-chip">KYC: <strong style="color:var(--amber)">⏳ Pending</strong></div>{% endif %}
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="qa-grid">
+  <a href="{{ url_for('deposit') }}"        class="qa"><div class="qa-ico">💰</div><div class="qa-lbl">Deposit</div></a>
+  <a href="{{ url_for('withdraw') }}"       class="qa"><div class="qa-ico">💸</div><div class="qa-lbl">Withdraw</div></a>
+  <a href="{{ url_for('transfer') }}"       class="qa"><div class="qa-ico">🔄</div><div class="qa-lbl">Transfer</div></a>
+  <a href="{{ url_for('loans') }}"          class="qa"><div class="qa-ico">🏛️</div><div class="qa-lbl">Loans</div></a>
+  <a href="{{ url_for('fixed_deposits') }}" class="qa"><div class="qa-ico">📈</div><div class="qa-lbl">Fixed Deposit</div></a>
+</div>
+
+<!-- Stats Row -->
+<div class="g3 mb2">
+  <div class="stat-card">
+    <div class="stat-icon">🏛️</div>
+    <div class="stat-val">₹{{ "{:,.0f}".format(total_loan) }}</div>
+    <div class="stat-lbl">Active Loan Outstanding</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📈</div>
+    <div class="stat-val">₹{{ "{:,.0f}".format(total_fd) }}</div>
+    <div class="stat-lbl">Fixed Deposits Active</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📊</div>
+    <div class="stat-val">{{ fds|length + loans|length }}</div>
+    <div class="stat-lbl">Total Active Products</div>
+  </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="card">
+  <div class="card-hd">⏱ Recent Transactions
+    <a href="{{ url_for('transactions') }}" class="btn btn-ghost btn-xs" style="margin-left:auto">View All →</a>
+  </div>
+  {% if txns %}
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Type</th><th>Description</th><th>Amount</th><th>Balance After</th><th>Time</th></tr></thead>
+      <tbody>
+        {% for t in txns %}
+        <tr>
+          <td>
+            {% if 'Deposit' in t.type or 'Received' in t.type or 'Opened' in t.type or 'Disbursed' in t.type %}
+              <span class="badge b-green">↓ {{ t.type }}</span>
+            {% elif 'Withdrawal' in t.type or 'Sent' in t.type or 'EMI' in t.type or 'FD Created' in t.type %}
+              <span class="badge b-red">↑ {{ t.type }}</span>
+            {% else %}
+              <span class="badge b-sky">⇄ {{ t.type }}</span>
+            {% endif %}
+          </td>
+          <td class="muted" style="font-size:.83rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.description or '—' }}</td>
+          <td style="font-weight:600;font-family:'Cormorant Garamond',serif;font-size:1rem">₹{{ "{:,.2f}".format(t.amount) }}</td>
+          <td class="muted">₹{{ "{:,.2f}".format(t.balance_after) }}</td>
+          <td style="font-size:.78rem" class="muted mono">{{ t.timestamp }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="tc" style="padding:3rem">
+    <div style="font-size:2.5rem;margin-bottom:1rem;opacity:.2">📭</div>
+    <p class="muted">No transactions yet.</p>
+    <a href="{{ url_for('deposit') }}" class="btn btn-primary btn-sm mt">Make First Deposit</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

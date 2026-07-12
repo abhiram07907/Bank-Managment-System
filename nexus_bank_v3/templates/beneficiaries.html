@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Beneficiaries — NexusBank{% endblock %}
+{% block content %}
+<div class="section-title">👥 Saved Beneficiaries</div>
+<p class="section-sub">Manage your trusted transfer recipients</p>
+<div class="g2" style="align-items:start;gap:1.75rem">
+  <div class="card">
+    <div class="card-hd">➕ Add Beneficiary</div>
+    <form method="POST">
+      <div class="fg"><label class="fl">Account Number *</label><input class="fi mono" name="ben_acc" type="text" placeholder="NXS123456789" style="text-transform:uppercase" required/></div>
+      <div class="fg" style="margin-bottom:1.5rem"><label class="fl">Nickname (optional)</label><input class="fi" name="nickname" type="text" placeholder="e.g. Friend, Office, Mom"/></div>
+      <button type="submit" class="btn btn-primary btn-full">Add Beneficiary</button>
+    </form>
+  </div>
+  <div>
+    {% if bens %}
+      {% for b in bens %}
+      <div class="card mb" style="padding:1.25rem 1.5rem">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-weight:600;margin-bottom:.2rem">{{ b.nickname }}</div>
+            <div class="muted mono" style="font-size:.8rem">{{ b.ben_acc_no }}</div>
+            <div class="muted" style="font-size:.75rem;margin-top:.2rem">{{ b.ben_name }} · Added {{ b.added_at[:10] }}</div>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <a href="{{ url_for('transfer') }}" onclick="setTimeout(()=>document.getElementById('to_acc') && (document.getElementById('to_acc').value='{{ b.ben_acc_no }}'),100)" class="btn btn-primary btn-xs">Transfer</a>
+            <form method="POST" action="{{ url_for('delete_beneficiary', bid=b.id) }}" style="display:inline" onsubmit="return confirm('Remove this beneficiary?')">
+              <button type="submit" class="btn btn-danger btn-xs">Remove</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="card tc" style="padding:2.5rem"><div style="font-size:2rem;opacity:.2;margin-bottom:.8rem">👥</div><p class="muted">No beneficiaries added yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

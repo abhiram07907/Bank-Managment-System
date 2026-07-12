@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Transaction History — NexusBank{% endblock %}
+{% block content %}
+<div class="section-title">📋 Transaction History</div>
+<p class="section-sub">Complete ledger — {{ u.account_no }}</p>
+<div class="card">
+  {% if txns %}
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Balance After</th><th>Date & Time</th></tr></thead>
+      <tbody>
+        {% for t in txns %}
+        <tr>
+          <td class="muted mono" style="font-size:.75rem">{{ t.id }}</td>
+          <td>
+            {% if 'Deposit' in t.type or 'Received' in t.type or 'Opened' in t.type or 'Disbursed' in t.type %}
+              <span class="badge b-green">↓ {{ t.type }}</span>
+            {% elif 'Withdrawal' in t.type or 'Sent' in t.type or 'EMI' in t.type or 'FD Created' in t.type %}
+              <span class="badge b-red">↑ {{ t.type }}</span>
+            {% else %}
+              <span class="badge b-sky">⇄ {{ t.type }}</span>
+            {% endif %}
+          </td>
+          <td><span class="badge b-gray">{{ t.category or '—' }}</span></td>
+          <td class="muted" style="font-size:.82rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.description or '—' }}</td>
+          <td style="font-weight:600;font-family:'Cormorant Garamond',serif;font-size:1rem">₹{{ "{:,.2f}".format(t.amount) }}</td>
+          <td class="muted">₹{{ "{:,.2f}".format(t.balance_after) }}</td>
+          <td class="muted mono" style="font-size:.75rem;white-space:nowrap">{{ t.timestamp }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted mt" style="font-size:.8rem">{{ txns|length }} transaction(s) total</p>
+  {% else %}
+  <div class="tc" style="padding:3rem"><div style="font-size:2.5rem;opacity:.2;margin-bottom:1rem">📭</div><p class="muted">No transactions yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

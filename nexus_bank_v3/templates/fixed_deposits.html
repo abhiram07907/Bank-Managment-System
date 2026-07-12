@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Fixed Deposits — NexusBank{% endblock %}
+{% block content %}
+<div class="section-title">📈 Fixed Deposits</div>
+<p class="section-sub">Grow your money with guaranteed returns up to 7.5% p.a.</p>
+
+<!-- FD Rates Table -->
+<div class="card mb2">
+  <div class="card-hd">💹 Current FD Interest Rates</div>
+  <div style="display:flex;flex-wrap:wrap;gap:1rem">
+    {% for months, rate in fd_rates.items() %}
+    <div style="background:var(--raised);border:1px solid var(--rim);border-radius:var(--r-sm);padding:1rem 1.5rem;text-align:center;flex:1;min-width:100px">
+      <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fog);margin-bottom:.4rem">{{ months }} months</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--emerald)">{{ rate }}%</div>
+      <div style="font-size:.72rem;color:var(--fog);margin-top:.2rem">p.a.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="g2" style="align-items:start;gap:1.75rem">
+  <!-- Open FD Form -->
+  <div class="card">
+    <div class="card-hd">➕ Open Fixed Deposit</div>
+    <form method="POST">
+      <div class="fg"><label class="fl">Deposit Amount (₹) *</label><input class="fi" name="amount" id="fd_amt" type="number" min="1000" step="100" placeholder="Minimum ₹1,000" oninput="calcFD()" required/></div>
+      <div class="fg">
+        <label class="fl">Tenure *</label>
+        <select class="fi" name="tenure" id="fd_tenure" onchange="calcFD()">
+          {% for months, rate in fd_rates.items() %}
+          <option value="{{ months }}">{{ months }} months — {{ rate }}% p.a.</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div id="fd-preview" style="background:var(--emerald-dim);border:1px solid var(--emerald-glow);border-radius:9px;padding:.85rem 1rem;margin-bottom:1.2rem;font-size:.9rem;display:none">
+        <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span class="muted">Principal</span><strong id="fd-p">—</strong></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span class="muted">Interest Earned</span><strong class="em" id="fd-int">—</strong></div>
+        <div style="display:flex;justify-content:space-between"><span class="muted">Maturity Amount</span><strong style="color:var(--emerald);font-size:1.1rem" id="fd-mat">—</strong></div>
+      </div>
+      <div class="fg" style="margin-bottom:1.5rem"><label class="fl">Confirm PIN *</label><input class="fi" name="pin" type="password" maxlength="4" placeholder="••••" required/></div>
+      <button type="submit" class="btn btn-primary btn-full">Open FD →</button>
+    </form>
+  </div>
+
+  <!-- My FDs -->
+  <div>
+    <div class="card-hd mb">My Fixed Deposits</div>
+    {% if my_fds %}
+      {% for fd in my_fds %}
+      <div class="fd-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem">
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700">₹{{ "{:,.0f}".format(fd.amount) }}</div>
+            <div class="muted" style="font-size:.8rem">{{ fd.tenure_months }} months @ {{ fd.interest_rate }}% p.a.</div>
+          </div>
+          {% if fd.status=='Active' %}<span class="badge b-green">Active</span>
+          {% elif fd.status=='Broken' %}<span class="badge b-red">Broken</span>
+          {% else %}<span class="badge b-gray">{{ fd.status }}</span>{% endif %}
+        </div>
+        <div class="g2" style="gap:.75rem;margin-bottom:.75rem;font-size:.85rem">
+          <div><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Opens</div><strong>{{ fd.created_at[:10] }}</strong></div>
+          <div><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Matures</div><strong class="em">{{ fd.maturity_date }}</strong></div>
+          <div><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Maturity Amount</div><strong>₹{{ "{:,.2f}".format(fd.maturity_amt) }}</strong></div>
+          <div><div class="muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Interest</div><strong class="am">₹{{ "{:,.2f}".format(fd.maturity_amt - fd.amount) }}</strong></div>
+        </div>
+        {% if fd.status=='Active' %}
+        <form method="POST" action="{{ url_for('break_fd', fid=fd.id) }}" style="display:flex;gap:.6rem" onsubmit="return confirm('Break this FD early? 1% penalty applies.')">
+          <input class="fi" name="pin" type="password" maxlength="4" placeholder="PIN for break" style="flex:1;padding:.55rem .9rem;font-size:.85rem"/>
+          <button type="submit" class="btn btn-danger btn-sm">Break FD</button>
+        </form>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="card tc" style="padding:2.5rem"><div style="font-size:2rem;opacity:.2;margin-bottom:.8rem">📈</div><p class="muted">No fixed deposits yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+const fdRates = {{ fd_rates | tojson }};
+function calcFD(){
+  const p=parseFloat(document.getElementById('fd_amt').value);
+  const t=parseInt(document.getElementById('fd_tenure').value);
+  if(!p||!t){document.getElementById('fd-preview').style.display='none';return;}
+  const rate=fdRates[t]||7;
+  const mat=p*(1+rate/100*t/12);
+  const interest=mat-p;
+  document.getElementById('fd-p').textContent='₹'+p.toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('fd-int').textContent='₹'+interest.toFixed(2);
+  document.getElementById('fd-mat').textContent='₹'+mat.toFixed(2);
+  document.getElementById('fd-preview').style.display='block';
+}
+</script>
+{% endblock %}
