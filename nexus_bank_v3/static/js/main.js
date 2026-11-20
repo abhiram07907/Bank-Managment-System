@@ -160,3 +160,23 @@ function showTab(name) {
 function formatINR(n) {
   return '₹' + parseFloat(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
+/* Validate numeric inputs */
+function validateNumericInput(input) {
+  if (!input) return false;
+
+  const value = Number(input.value);
+  const valid = Number.isFinite(value) && value >= 0;
+
+  input.setCustomValidity(
+    valid ? '' : 'Please enter a valid non-negative number.'
+  );
+
+  return valid;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('input', () => validateNumericInput(input));
+  });
+});
