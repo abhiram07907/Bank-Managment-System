@@ -180,3 +180,21 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', () => validateNumericInput(input));
   });
 });
+
+/* Prevent accidental duplicate form submissions */
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) return;
+
+      const submitButton =
+        event.submitter ||
+        form.querySelector('button[type="submit"], input[type="submit"]');
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.setAttribute('aria-disabled', 'true');
+      }
+    });
+  });
+});
